@@ -22,57 +22,72 @@ class CategoryWidget extends StatefulWidget {
 class _CategoryWidgetState extends State<CategoryWidget> {
   final GlobalKey<PopupMenuButtonState<int>> _key = GlobalKey();
   late TextEditingController _newCategoryNameController;
+  bool _isLoading = false;
 
-
-    handleClick(value){
-        switch (value) {
-          case 'Edit':
-            showDialog(context: context, builder: (context){
+  handleClick(value) {
+    switch (value) {
+      case 'Edit':
+        showDialog(
+            context: context,
+            builder: (context) {
               return AlertDialog(
                 content: TextFormField(
-                    controller: _newCategoryNameController,
-                    keyboardType: TextInputType.text,
-                    decoration: const InputDecoration(
-                        label: Text("New Name"),
-                        border: OutlineInputBorder(),
-                        enabledBorder: OutlineInputBorder(),
-                        filled: true,
-                        icon: Icon(Icons.text_fields)
-                  ),
+                  controller: _newCategoryNameController,
+                  keyboardType: TextInputType.text,
+                  decoration: const InputDecoration(
+                      label: Text("New Name"),
+                      border: OutlineInputBorder(),
+                      enabledBorder: OutlineInputBorder(),
+                      filled: true,
+                      icon: Icon(Icons.text_fields)),
                 ),
                 actions: [
-                  ElevatedButton(onPressed: () async{
-                    if(_newCategoryNameController.text.isNotEmpty){
-                      FireStoreMethods().updateCategoryName(widget.categoryName,_newCategoryNameController.text);
-                      _newCategoryNameController.clear();
-                      Navigator.pop(context);
-                    }
-                  }, child: const Text("Change",style: TextStyle(color: Colors.white),)),
-                  TextButton(onPressed: (){
-                    Navigator.pop(context);
-                  }, child: const Text("Cancel",style: TextStyle(color: Colors.red),))
+                  ElevatedButton(
+                      onPressed: () async {
+                        if (_newCategoryNameController.text.isNotEmpty) {
+                          FireStoreMethods().updateCategoryName(
+                              widget.categoryName,
+                              _newCategoryNameController.text);
+                          _newCategoryNameController.clear();
+                          Navigator.pop(context);
+                        }
+                      },
+                      child: const Text(
+                        "Change",
+                        style: TextStyle(color: Colors.white),
+                      )),
+                  TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text(
+                        "Cancel",
+                        style: TextStyle(color: Colors.red),
+                      ))
                 ],
               );
             });
-            break;
-          case 'Delete':
-            FireStoreMethods().deleteData(widget.categoryName);
-            break;
-        }
+        break;
+      case 'Delete':
+        FireStoreMethods().deleteData(widget.categoryName);
+        break;
     }
+  }
 
-    @override
+  @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _newCategoryNameController = TextEditingController();
   }
+
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
     _newCategoryNameController.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -102,7 +117,6 @@ class _CategoryWidgetState extends State<CategoryWidget> {
                   }).toList();
                 },
               ),
-
             ],
           ),
         ),
@@ -158,47 +172,7 @@ class _CategoryWidgetState extends State<CategoryWidget> {
                                   onPressed: () async {
                                     Uint8List? file =
                                         await pickImage(ImageSource.camera);
-                                    showDialog(
-                                        context: context,
-                                        builder: (context) {
-                                          return AlertDialog(
-                                            content: Container(
-                                              decoration: BoxDecoration(
-                                                image: DecorationImage(
-                                                    image: MemoryImage(file!),
-                                                    fit: BoxFit.cover),
-                                              ),
-                                            ),
-                                            actions: [
-                                              ElevatedButton(
-                                                  onPressed: () async {
-                                                    String url =
-                                                        await StorageMethods()
-                                                            .uploadImageToStorage(
-                                                                widget
-                                                                    .categoryName,
-                                                                file);
-                                                    FireStoreMethods()
-                                                        .addImageToCategory(
-                                                            widget.categoryName,
-                                                            url);
-
-                                                    Navigator.pop(context);
-                                                  },
-                                                  child:
-                                                      const Text("Add Image")),
-                                              TextButton(
-                                                  onPressed: () {
-                                                    file = null;
-                                                  },
-                                                  child: const Text(
-                                                    "Cancel",
-                                                    style: TextStyle(
-                                                        color: Colors.red),
-                                                  ))
-                                            ],
-                                          );
-                                        });
+                                    await buildPreviewImage(context, file);
                                   },
                                 ),
                                 SimpleDialogOption(
@@ -217,47 +191,7 @@ class _CategoryWidgetState extends State<CategoryWidget> {
                                     // Navigator.of(context).pop();
                                     Uint8List? file =
                                         await pickImage(ImageSource.gallery);
-                                    showDialog(
-                                        context: context,
-                                        builder: (context) {
-                                          return AlertDialog(
-                                            content: Container(
-                                              decoration: BoxDecoration(
-                                                image: DecorationImage(
-                                                    image: MemoryImage(file!),
-                                                    fit: BoxFit.cover),
-                                              ),
-                                            ),
-                                            actions: [
-                                              ElevatedButton(
-                                                  onPressed: () async {
-                                                    String url =
-                                                        await StorageMethods()
-                                                            .uploadImageToStorage(
-                                                                widget
-                                                                    .categoryName,
-                                                                file);
-                                                    FireStoreMethods()
-                                                        .addImageToCategory(
-                                                            widget.categoryName,
-                                                            url);
-
-                                                    Navigator.pop(context);
-                                                  },
-                                                  child:
-                                                      const Text("Add Image")),
-                                              TextButton(
-                                                  onPressed: () {
-                                                    file = null;
-                                                  },
-                                                  child: const Text(
-                                                    "Cancel",
-                                                    style: TextStyle(
-                                                        color: Colors.red),
-                                                  ))
-                                            ],
-                                          );
-                                        });
+                                    await buildPreviewImage(context, file);
                                   },
                                 ),
                                 SimpleDialogOption(
@@ -289,5 +223,46 @@ class _CategoryWidgetState extends State<CategoryWidget> {
                     ))),
       ),
     );
+  }
+
+  buildPreviewImage(BuildContext context, Uint8List? file) async {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: MemoryImage(file!), fit: BoxFit.cover),
+              ),
+            ),
+            actions: [
+              ElevatedButton(
+                  onPressed: () async {
+                    setState(() {
+                      _isLoading = true;
+                    });
+                    String url = await StorageMethods()
+                        .uploadImageToStorage(widget.categoryName, file);
+                    FireStoreMethods()
+                        .addImageToCategory(widget.categoryName, url);
+                    setState(() {
+                      _isLoading = false;
+                    });
+
+                    Navigator.pop(context);
+                  },
+                  child: _isLoading? const CircularProgressIndicator():const Text("Add Image")),
+              TextButton(
+                  onPressed: () {
+                    file = null;
+                  },
+                  child: const Text(
+                    "Cancel",
+                    style: TextStyle(color: Colors.red),
+                  ))
+            ],
+          );
+        });
   }
 }

@@ -36,6 +36,7 @@ class AuthMethods {
             username: username,
             uid: cred.user!.uid,
             email: email,
+          data: {},
         );
         _firestore.collection('users').doc(cred.user!.uid).set(user.toJson());
 

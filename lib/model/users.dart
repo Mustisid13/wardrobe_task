@@ -27,7 +27,7 @@ class User {
       username: snap['username'],
       uid: snap['uid'],
       email: snap['email'],
-      data: Map<String,dynamic>.from(snap['data'])
+      data: snap['data']
     );
   }
 }

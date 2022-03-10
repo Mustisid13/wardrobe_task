@@ -84,7 +84,7 @@ class _WardrobePageState extends State<WardrobePage> {
       ),
       backgroundColor: Colors.white70.withOpacity(0.9),
 
-      body: StreamBuilder(
+      body: Provider.of<UserProvider>(context).getUser!= null? StreamBuilder(
           stream: _firestore
               .collection("users")
               .doc(Provider.of<UserProvider>(context).getUser!.uid)
@@ -102,7 +102,7 @@ class _WardrobePageState extends State<WardrobePage> {
             } else {
               return const CircularProgressIndicator();
             }
-          }),
+          }) :const Center(child:  CircularProgressIndicator()),
     );
   }
 }
