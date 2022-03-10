@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "751952656323",
+    "project_id": "wardrobe-4ece3",
+    "storage_bucket": "wardrobe-4ece3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:751952656323:android:0e7d5a52ea02740e5baf76",
+        "android_client_info": {
+          "package_name": "com.mustafa.wardrobe_task"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "751952656323-get4tv6mh8ar322bltql668qqph9bpq4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDw3Vrj91IpHR_9KZ-8svIvSdIfrf3jlOg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "751952656323-get4tv6mh8ar322bltql668qqph9bpq4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
